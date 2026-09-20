@@ -1,0 +1,66 @@
+URGENT: The deployed LostLink application's LOGIN IS NOT WORKING.
+
+We have very limited hackathon time, so DO NOT rebuild the application and DO NOT change unrelated features.
+
+First, inspect the existing authentication implementation and identify exactly why login is failing.
+
+Check all of these:
+
+1. Frontend login form submission
+2. React authentication state/context
+3. Login API request URL
+4. Flask authentication endpoint
+5. Request JSON/body format
+6. Database connection
+7. User table/model
+8. Password hashing and password comparison
+9. JWT/token generation
+10. CORS configuration
+11. Environment variables
+12. API base URL
+13. Frontend/backend port configuration
+14. Production/deployment configuration
+15. Browser console errors
+16. Network/API response errors
+
+IMPORTANT:
+
+* Do not create a second authentication system.
+* Do not remove the existing authentication system unless it is fundamentally broken.
+* Preserve all existing LostLink functionality.
+* Do not change the UI unnecessarily.
+* Do not add unnecessary dependencies.
+* Do not expose passwords or secrets.
+* Do not hardcode API keys or passwords.
+
+First reproduce the login failure and inspect the actual error.
+
+Then fix the ROOT CAUSE.
+
+After fixing it, test:
+
+1. Register a new user.
+2. Log in with that user.
+3. Verify the authentication token/session is created.
+4. Refresh the page and verify authentication state works.
+5. Open the protected Dashboard.
+6. Verify an unauthenticated user cannot access protected pages.
+7. Verify logout works.
+
+VERY IMPORTANT FOR THE HACKATHON:
+
+If the database currently has no usable demo account, create a safe seeded demo account for testing:
+
+Email: [demo@lostlink.app](mailto:demo@lostlink.app)
+Password: LostLinkDemo123!
+
+Only use this as a local/demo account and do not expose real credentials or secrets.
+
+After fixing the issue, tell me:
+
+* What caused the login failure
+* What files you changed
+* How you fixed it
+* Exact steps I should use to test login
+
+Do not move on to other LostLink features until login works.
