@@ -1,0 +1,1 @@
+- [Private ownership data](private-ownership-data.md) — keep verification clues server-only and strip them before every public DTO.

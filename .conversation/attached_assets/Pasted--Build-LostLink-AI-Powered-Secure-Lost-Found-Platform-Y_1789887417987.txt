@@ -1,0 +1,916 @@
+# Build LostLink — AI-Powered Secure Lost & Found Platform
+
+You are a senior full-stack engineer, UI/UX designer, and AI product engineer.
+
+Build a complete, polished, functional MVP called **LostLink**.
+
+## 1. PRODUCT VISION
+
+LostLink is an AI-powered lost-and-found platform designed primarily for **college campuses and communities**.
+
+The problem is not simply that people lose things. The bigger problems are:
+
+1. Lost and found information is fragmented.
+2. It is difficult to match a lost item with a found item.
+3. Anyone can falsely claim a found item.
+4. Sensitive ownership information should not be publicly exposed.
+5. Phones and laptops require additional security considerations.
+
+LostLink solves this through:
+
+**FIND → MATCH → VERIFY → RETURN**
+
+The key differentiator is:
+
+> **LostLink does not simply match a person with an item. It verifies ownership before enabling a safe handover.**
+
+---
+
+# 2. CORE USER FLOW
+
+Implement this complete flow:
+
+User A:
+
+1. Creates a "Lost Item" report.
+2. Uploads an image.
+3. Adds public information.
+4. Adds private ownership clues.
+5. Submits the report.
+
+User B:
+
+1. Creates a "Found Item" report.
+2. Uploads an image.
+3. Adds basic information.
+4. LostLink searches for potential matches.
+
+AI Matching Engine:
+
+1. Compares item descriptions.
+2. Compares relevant visual information when possible.
+3. Compares category, brand, color, location and approximate time.
+4. Produces potential matches.
+5. Never treats AI similarity as proof of ownership.
+
+Ownership Verification:
+
+1. Owner receives a potential match.
+2. Owner can request verification.
+3. System uses private ownership clues that were NOT publicly displayed.
+4. Examples:
+
+   * unique scratch
+   * sticker
+   * case design
+   * hidden marking
+   * contents
+   * accessory
+   * previous photograph
+5. Claimant must provide matching evidence.
+6. Failed verification should not automatically label the person a criminal or "fraudster."
+7. Show "Ownership verification failed" or "Additional verification required."
+
+Safe Handover:
+
+1. Once ownership verification passes, enable a secure contact/handover flow.
+2. Do not reveal unnecessary private information.
+3. Both parties confirm the handover.
+4. Mark item as RESOLVED.
+
+---
+
+# 3. SPECIAL SUPPORT FOR PHONES AND LAPTOPS
+
+LostLink must support:
+
+* Smartphones
+* Laptops
+* Tablets
+* Earbuds
+* Watches
+* Bags
+* Wallets
+* Keys
+* ID cards
+* Books
+* Other personal belongings
+
+For laptops and phones:
+
+Public information may include:
+
+* Device type
+* Brand
+* General model
+* Color
+* General location
+* Approximate time
+
+Private information may include:
+
+* Serial number
+* IMEI
+* Unique physical mark
+* Sticker
+* Case
+* Wallpaper
+* Accessory
+* Previous photo
+
+## IMPORTANT SECURITY RULE
+
+Never expose IMEI, serial numbers, private ownership clues, passwords, device unlock codes, or other sensitive information publicly.
+
+Do NOT ask a finder to unlock a found phone or laptop.
+
+Do NOT implement device-lock bypassing, password recovery, hacking, or unauthorized tracking.
+
+The application should explicitly tell finders:
+
+> "Do not attempt to unlock, access, or bypass security on a found device."
+
+For device recovery, provide a general security checklist and optionally links/instructions for the user's existing official device-finding service.
+
+LostLink itself should focus on **lost-and-found coordination and ownership verification**, not unauthorized device tracking.
+
+---
+
+# 4. ANTI-FRAUD / OWNERSHIP VERIFICATION
+
+This is one of the most important features.
+
+Do NOT reveal all item details publicly.
+
+Example:
+
+Public:
+
+"Black Lenovo laptop lost near library."
+
+Private:
+
+* small red Arduino sticker
+* scratch near left corner
+* blue mouse
+* specific previous photo
+
+A fake claimant should NOT be able to simply read these details and repeat them.
+
+The verification UI should work like:
+
+---
+
+## OWNERSHIP VERIFICATION
+
+Potential match found.
+
+To protect the owner, some identifying information is hidden.
+
+Verification challenge:
+
+"What unique mark is present on your device?"
+
+[ Enter answer ]
+
+[Submit Verification]
+
+---
+
+If successful:
+
+✓ Ownership evidence matched
+✓ Previous photo matched
+✓ Identity verified
+
+Ownership verification passed.
+
+If unsuccessful:
+
+⚠ Ownership verification failed.
+
+The information provided did not sufficiently match the owner's private evidence.
+
+[Request Additional Verification]
+
+Do NOT expose the correct answers.
+
+---
+
+# 5. IDENTITY VERIFICATION
+
+Add optional community verification.
+
+For example:
+
+College email:
+
+[student@college.edu](mailto:student@college.edu)
+
+OTP / verification status:
+
+✓ Verified student
+
+Important distinction:
+
+Identity verification means:
+
+> "This person belongs to the community."
+
+It does NOT automatically mean:
+
+> "This person owns the item."
+
+Display these as separate statuses.
+
+---
+
+# 6. MULTIPLE CLAIMANTS
+
+Support multiple people claiming the same item.
+
+Example:
+
+Found item:
+Black Lenovo laptop
+
+Claims:
+
+User A
+✓ Private detail matched
+✓ Previous photo matched
+
+User B
+✗ Private detail mismatch
+
+User C
+⚠ Additional verification required
+
+Do not publicly rank people or expose unnecessary personal information.
+
+The finder should see only the information necessary to safely resolve the claim.
+
+---
+
+# 7. AI MATCHING
+
+Create an AI matching service.
+
+Potential matching factors:
+
+* Item category
+* Brand
+* Model
+* Color
+* Description similarity
+* Location proximity
+* Time proximity
+* Image similarity when available
+
+Return something like:
+
+Potential Match
+
+91% similarity
+
+✓ Same category
+✓ Same brand
+✓ Similar color
+✓ Nearby location
+✓ Similar description
+
+IMPORTANT:
+
+Do not present the percentage as proof of ownership.
+
+Use wording such as:
+
+> "Potential match"
+
+rather than:
+
+> "This definitely belongs to this person."
+
+If a real AI API is unavailable, implement a reliable deterministic matching fallback using weighted similarity so the application still works.
+
+---
+
+# 8. IMAGE ANALYSIS
+
+Allow users to upload images.
+
+Use AI vision/image analysis if an API is configured.
+
+Extract useful information such as:
+
+* object type
+* color
+* brand if visible
+* general physical characteristics
+
+For example:
+
+Image:
+
+[Black laptop]
+
+AI analysis:
+
+Category: Laptop
+Brand: Lenovo
+Color: Black
+Visible characteristics: Small red sticker
+
+Do not invent details that cannot be observed.
+
+If AI image analysis is unavailable, allow manual entry and continue functioning.
+
+---
+
+# 9. MAIN PAGES
+
+Create these pages:
+
+## Landing Page
+
+Hero:
+
+"Lost something? Found something? Let's reconnect it with its owner."
+
+Subheading:
+
+"AI-powered matching with secure ownership verification."
+
+Buttons:
+
+[Report Lost Item]
+[Report Found Item]
+
+Show a simple 3-step process:
+
+1. Find
+2. Verify
+3. Return
+
+Add statistics/cards such as:
+
+Items Reported
+Potential Matches
+Items Returned
+
+Use realistic demo data if necessary.
+
+---
+
+## Dashboard
+
+Show:
+
+* My Lost Items
+* My Found Items
+* Potential Matches
+* Pending Claims
+* Resolved Items
+
+Cards should show:
+
+Item image
+Name
+Category
+Location
+Date
+Status
+
+Statuses:
+
+LOST
+FOUND
+MATCHED
+VERIFICATION PENDING
+VERIFIED
+RESOLVED
+
+---
+
+## Report Lost Item
+
+Fields:
+
+* Item category
+* Item name
+* Brand
+* Model
+* Color
+* Location
+* Date
+* Approximate time
+* Description
+* Image upload
+
+Private ownership section:
+
+"Private verification details"
+
+Examples:
+
+* Unique mark
+* Sticker
+* Contents
+* Accessory
+* Previous photo
+
+Clearly explain:
+
+> "These details are kept private and may be used to verify ownership."
+
+---
+
+## Report Found Item
+
+Fields:
+
+* Item category
+* Item name
+* Brand
+* Color
+* Found location
+* Date
+* Approximate time
+* Description
+* Image
+
+Warning:
+
+> "Do not attempt to unlock or access a found phone, laptop, or other secured device."
+
+---
+
+## Matches Page
+
+Display potential matches.
+
+Example:
+
+BLACK LENOVO LAPTOP
+
+91% potential match
+
+✓ Category
+✓ Brand
+✓ Color
+✓ Nearby location
+✓ Similar description
+
+[View Match]
+[Request Verification]
+
+---
+
+## Verification Page
+
+Create a clean secure interface.
+
+Show:
+
+"Ownership Verification"
+
+Do not reveal private clues.
+
+Generate verification challenges.
+
+Allow claimant to submit answers.
+
+Show:
+
+✓ Passed
+⚠ Additional verification
+✗ Failed
+
+Keep the correct answers hidden.
+
+---
+
+## Claims Page
+
+Show:
+
+Item
+Claimant
+Verification status
+Identity status
+Actions
+
+For multiple claims:
+
+Claim A
+✓ Verified
+
+Claim B
+✗ Verification failed
+
+Claim C
+⚠ Pending
+
+---
+
+## Handover Page
+
+After verification:
+
+"Safe Handover"
+
+Show:
+
+Item
+Verified owner
+Finder
+
+Actions:
+
+[Arrange Handover]
+[Confirm Handover]
+
+Then:
+
+✓ Item successfully returned
+
+---
+
+# 10. ADMIN DASHBOARD
+
+Create a simple admin dashboard.
+
+Metrics:
+
+* Total lost items
+* Total found items
+* Potential matches
+* Pending verification
+* Successfully returned
+
+Charts:
+
+* Items by category
+* Lost vs found
+* Resolution rate
+* Reports over time
+
+Admin can:
+
+* View reports
+* Review suspicious/repeated failed verification attempts
+* Mark reports for manual review
+* Resolve disputes
+
+Do not automatically accuse users of criminal behavior.
+
+---
+
+# 11. UI / UX
+
+The UI should look like a polished modern startup product.
+
+Style:
+
+* Modern
+* Clean
+* Minimal
+* Professional
+* Responsive
+* Mobile-first
+* Strong visual hierarchy
+
+Use:
+
+* Rounded cards
+* Subtle shadows
+* Clean typography
+* Good spacing
+* Clear status badges
+* Icons
+* Smooth transitions
+* Loading states
+* Empty states
+* Error states
+* Toast notifications
+
+Create a professional navigation bar:
+
+LostLink logo
+
+Home
+Dashboard
+Report Lost
+Report Found
+Matches
+Claims
+Profile
+
+Use a consistent design system.
+
+Avoid excessive animations.
+
+---
+
+# 12. TECH STACK
+
+Use:
+
+Frontend:
+React
+Vite
+Tailwind CSS
+
+Backend:
+Python
+Flask
+
+Database:
+Use SQLite for the hackathon MVP unless another simple database is already configured.
+
+AI:
+Use an AI API only through the backend.
+
+Never expose API keys in React/frontend code.
+
+Environment variables:
+
+OPENAI_API_KEY=...
+
+or another configurable AI provider.
+
+Create a clean service abstraction so the AI provider can be replaced easily.
+
+---
+
+# 13. API STRUCTURE
+
+Create clean REST endpoints such as:
+
+POST /api/items/lost
+POST /api/items/found
+GET /api/items
+GET /api/items/:id
+POST /api/matches
+GET /api/matches
+POST /api/claims
+POST /api/claims/:id/verify
+POST /api/handover
+GET /api/dashboard
+POST /api/ai/analyze-image
+POST /api/ai/match
+
+Use proper validation and error handling.
+
+---
+
+# 14. DATABASE MODELS
+
+Create appropriate models for:
+
+User
+Item
+LostItem
+FoundItem
+Match
+Claim
+VerificationChallenge
+Handover
+Notification
+
+Important fields should include:
+
+Item:
+id
+owner_id
+type
+category
+brand
+model
+color
+description
+image_url
+location
+date
+time
+status
+created_at
+
+Private verification data should NOT be returned in normal public API responses.
+
+---
+
+# 15. SECURITY
+
+Implement basic security best practices:
+
+* Environment variables for secrets
+* Input validation
+* File type validation
+* File size limits
+* Authentication where practical
+* Authorization checks
+* Do not expose private verification data
+* Do not expose IMEI/serial numbers publicly
+* Do not expose personal contact information unnecessarily
+* Do not allow users to access another user's private information
+* Do not allow frontend access to API keys
+
+For the hackathon MVP, prioritize the security architecture that protects private ownership clues.
+
+---
+
+# 16. DEMO MODE
+
+Because this is an 8-hour hackathon, the application MUST have a working demo even if external AI APIs are unavailable.
+
+Create seeded demo data.
+
+Include examples:
+
+1. Lost Lenovo laptop
+2. Found Lenovo laptop
+3. Lost black wallet
+4. Found black wallet
+5. Lost AirPods
+6. Found AirPods
+
+Include at least one:
+
+* successful match
+* failed ownership verification
+* successful ownership verification
+* resolved item
+
+Add a clearly visible "Demo Data" or demo mode if appropriate.
+
+---
+
+# 17. DEMO SCENARIO
+
+The application should make this exact hackathon demo possible:
+
+### Scenario:
+
+A student loses a Lenovo laptop.
+
+They create:
+
+"Lost Lenovo laptop near library."
+
+They add private clues:
+
+* Red Arduino sticker
+* Scratch on left corner
+* Blue mouse
+
+Another student reports:
+
+"Found Lenovo laptop near library."
+
+AI detects:
+
+91% potential match.
+
+A fake claimant attempts to claim it.
+
+They fail verification.
+
+Then the actual owner verifies:
+
+✓ Correct private clue
+✓ Matching previous photo
+✓ Verified college identity
+
+LostLink allows secure handover.
+
+Final screen:
+
+"🎉 Item Returned Successfully"
+
+Display:
+
+Items Returned: +1
+
+---
+
+# 18. HACKATHON OPTIMIZATION
+
+This is an 8-hour hackathon.
+
+Do NOT over-engineer.
+
+Prioritize in this order:
+
+1. Working lost/found reporting
+2. Image upload
+3. Matching engine
+4. Ownership verification
+5. Dashboard
+6. Handover flow
+7. Beautiful UI
+8. AI enhancement
+9. Extra features
+
+If a feature threatens the core MVP, simplify it.
+
+Do not spend hours implementing complex infrastructure.
+
+---
+
+# 19. IMPORTANT DEVELOPMENT RULE
+
+Do not just generate a huge amount of code without testing.
+
+Work incrementally.
+
+First:
+
+1. Inspect the project structure.
+2. Set up the application.
+3. Build the frontend shell.
+4. Build backend API.
+5. Connect frontend and backend.
+6. Implement database.
+7. Implement lost/found flow.
+8. Implement matching.
+9. Implement ownership verification.
+10. Add AI.
+11. Test.
+12. Polish UI.
+13. Prepare deployment.
+
+After each major feature, verify that it works before moving on.
+
+If something is broken, fix it rather than building more features on top of it.
+
+---
+
+# 20. README
+
+Create a professional README containing:
+
+* Project title
+* Problem
+* Solution
+* Features
+* Architecture
+* Tech stack
+* AI usage
+* Security approach
+* Setup instructions
+* Environment variables
+* API documentation
+* Demo flow
+* Future scope
+
+Include an architecture diagram using Mermaid if useful.
+
+---
+
+# 21. FINAL HACKATHON PITCH
+
+The product should communicate this clearly:
+
+> "LostLink is an AI-powered secure lost-and-found platform that goes beyond matching items. It protects private ownership clues, detects potential matches, verifies claims, and enables safer item recovery."
+
+Core message:
+
+**FIND → MATCH → VERIFY → RETURN**
+
+---
+
+# 22. FINAL REQUIREMENT
+
+Build the application as a genuinely functional MVP.
+
+Do not leave major features as fake buttons.
+
+If an external service is unavailable, provide a functional local fallback.
+
+Use realistic demo data where necessary.
+
+Make the project visually impressive enough for a hackathon judging demo while keeping the architecture simple enough to understand and maintain.
+
+Before finishing:
+
+* Run the application.
+* Test every main user flow.
+* Fix console errors.
+* Fix API errors.
+* Test responsive/mobile layout.
+* Verify that private verification information cannot be exposed through normal public views.
+* Verify that the demo scenario works from start to finish.
+
+Then provide:
+
+1. Project structure
+2. How to run frontend
+3. How to run backend
+4. Required environment variables
+5. Demo credentials if authentication exists
+6. Demo scenario
+7. Known limitations
+8. Recommended next steps
+
+Start by inspecting the existing project directory and determining whether there is already a React/Vite/Flask project. Reuse existing working code where possible instead of unnecessarily rebuilding it.

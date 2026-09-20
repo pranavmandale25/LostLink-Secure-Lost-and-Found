@@ -1,0 +1,28 @@
+kind = "web"
+previewPath = "/"
+title = "LostLink"
+description = "An AI-powered secure lost-and-found platform for campuses and communities, helping people find items, match potential reports, verify ownership privately, and complete safe handovers."
+version = "1.0.0"
+id = "artifacts/lostlink"
+router = "path"
+
+[[services]]
+name = "web"
+paths = [ "/" ]
+localPort = 20228
+
+[services.development]
+run = "pnpm --filter @workspace/lostlink run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/lostlink", "run", "build" ]
+serve = "static"
+publicDir = "artifacts/lostlink/dist/public"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "20228"
+BASE_PATH = "/"

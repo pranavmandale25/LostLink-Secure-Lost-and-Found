@@ -1,22 +1,25 @@
 openapi: 3.1.0
 info:
-  # Do not change the title, if the title changes, the import paths will be broken
   title: Api
   version: 0.1.0
-  description: API specification
+  description: LostLink secure lost-and-found platform API
 servers:
   - url: /api
     description: Base API path
 tags:
   - name: health
-    description: Health operations
+  - name: items
+  - name: matches
+  - name: claims
+  - name: handover
+  - name: dashboard
+  - name: admin
 paths:
   /healthz:
     get:
       operationId: healthCheck
       tags: [health]
       summary: Health check
-      description: Returns server health status
       responses:
         "200":
           description: Healthy
@@ -24,13 +27,377 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/HealthStatus"
+  /items:
+    get:
+      operationId: listItems
+      tags: [items]
+      summary: List lost and found items
+      parameters:
+        - in: query
+          name: type
+          schema:
+            type: string
+            enum: [lost, found]
+        - in: query
+          name: status
+          schema:
+            type: string
+        - in: query
+          name: search
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Items
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Item"
+    post:
+      operationId: createItem
+      tags: [items]
+      summary: Create a lost or found report
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ItemInput"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Item"
+  /items/{id}:
+    get:
+      operationId: getItem
+      tags: [items]
+      summary: Get an item without private ownership details
+      parameters:
+        - $ref: "#/components/parameters/Id"
+      responses:
+        "200":
+          description: Item
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Item"
+        "404":
+          $ref: "#/components/responses/NotFound"
+  /matches:
+    get:
+      operationId: listMatches
+      tags: [matches]
+      summary: List potential matches
+      responses:
+        "200":
+          description: Matches
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Match"
+    post:
+      operationId: createMatch
+      tags: [matches]
+      summary: Find potential matches for an item
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/MatchInput"
+      responses:
+        "201":
+          description: Potential match
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Match"
+  /claims:
+    get:
+      operationId: listClaims
+      tags: [claims]
+      summary: List claims
+      responses:
+        "200":
+          description: Claims
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Claim"
+    post:
+      operationId: createClaim
+      tags: [claims]
+      summary: Create a claim for a found item
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ClaimInput"
+      responses:
+        "201":
+          description: Claim
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Claim"
+  /claims/{id}/verify:
+    post:
+      operationId: verifyClaim
+      tags: [claims]
+      summary: Submit private ownership evidence
+      parameters:
+        - $ref: "#/components/parameters/Id"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/VerificationInput"
+      responses:
+        "200":
+          description: Verification result
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/VerificationResult"
+  /handover:
+    post:
+      operationId: createHandover
+      tags: [handover]
+      summary: Arrange or confirm a safe handover
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/HandoverInput"
+      responses:
+        "200":
+          description: Handover
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Handover"
+  /dashboard:
+    get:
+      operationId: getDashboard
+      tags: [dashboard]
+      summary: Get dashboard summary and recent activity
+      responses:
+        "200":
+          description: Dashboard
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Dashboard"
+  /admin/metrics:
+    get:
+      operationId: getAdminMetrics
+      tags: [admin]
+      summary: Get moderation and resolution metrics
+      responses:
+        "200":
+          description: Admin metrics
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AdminMetrics"
 components:
+  parameters:
+    Id:
+      in: path
+      name: id
+      required: true
+      schema:
+        type: string
+  responses:
+    NotFound:
+      description: Not found
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
   schemas:
     HealthStatus:
       type: object
+      required: [status]
       properties:
         status:
           type: string
-      required:
-        - status
-
+    Error:
+      type: object
+      required: [error]
+      properties:
+        error:
+          type: string
+    Item:
+      type: object
+      required: [id, type, category, name, brand, color, location, date, time, description, status, createdAt, imageUrl]
+      properties:
+        id: { type: string }
+        type: { type: string, enum: [lost, found] }
+        category: { type: string }
+        name: { type: string }
+        brand: { type: string }
+        model: { type: string }
+        color: { type: string }
+        location: { type: string }
+        date: { type: string }
+        time: { type: string }
+        description: { type: string }
+        imageUrl: { type: string }
+        status: { type: string, enum: [LOST, FOUND, MATCHED, VERIFICATION_PENDING, VERIFIED, RESOLVED] }
+        createdAt: { type: string }
+        ownerName: { type: string }
+        privateClueCount: { type: integer }
+    ItemInput:
+      type: object
+      required: [type, category, name, brand, color, location, date, time, description]
+      properties:
+        type: { type: string, enum: [lost, found] }
+        category: { type: string }
+        name: { type: string, minLength: 1 }
+        brand: { type: string }
+        model: { type: string }
+        color: { type: string }
+        location: { type: string }
+        date: { type: string }
+        time: { type: string }
+        description: { type: string }
+        imageUrl: { type: string }
+        privateClues:
+          type: array
+          items: { type: string }
+    Match:
+      type: object
+      required: [id, lostItem, foundItem, similarity, factors, status]
+      properties:
+        id: { type: string }
+        lostItem: { $ref: "#/components/schemas/Item" }
+        foundItem: { $ref: "#/components/schemas/Item" }
+        similarity: { type: integer }
+        factors:
+          type: array
+          items: { type: string }
+        status: { type: string, enum: [POTENTIAL, VERIFICATION_PENDING, VERIFIED, RESOLVED] }
+    MatchInput:
+      type: object
+      required: [lostItemId, foundItemId]
+      properties:
+        lostItemId: { type: string }
+        foundItemId: { type: string }
+    Claim:
+      type: object
+      required: [id, item, claimantName, verificationStatus, identityStatus, createdAt]
+      properties:
+        id: { type: string }
+        item: { $ref: "#/components/schemas/Item" }
+        claimantName: { type: string }
+        verificationStatus: { type: string, enum: [PENDING, PASSED, FAILED, ADDITIONAL_REVIEW] }
+        identityStatus: { type: string, enum: [VERIFIED, UNVERIFIED] }
+        evidenceMatched:
+          type: array
+          items: { type: string }
+        createdAt: { type: string }
+    ClaimInput:
+      type: object
+      required: [itemId, evidence]
+      properties:
+        itemId: { type: string }
+        evidence: { type: string }
+        identityEmail: { type: string }
+    VerificationInput:
+      type: object
+      required: [evidence]
+      properties:
+        evidence: { type: string, minLength: 1 }
+    VerificationResult:
+      type: object
+      required: [status, message, evidenceMatched]
+      properties:
+        status: { type: string, enum: [PASSED, FAILED, ADDITIONAL_REVIEW] }
+        message: { type: string }
+        evidenceMatched:
+          type: array
+          items: { type: string }
+    HandoverInput:
+      type: object
+      required: [itemId, action]
+      properties:
+        itemId: { type: string }
+        action: { type: string, enum: [ARRANGE, CONFIRM] }
+        note: { type: string }
+    Handover:
+      type: object
+      required: [id, item, status, nextStep]
+      properties:
+        id: { type: string }
+        item: { $ref: "#/components/schemas/Item" }
+        status: { type: string, enum: [ARRANGED, COMPLETED] }
+        nextStep: { type: string }
+    Dashboard:
+      type: object
+      required: [stats, recentItems, recentActivity]
+      properties:
+        stats:
+          type: object
+          required: [reported, matches, pendingClaims, returned]
+          properties:
+            reported: { type: integer }
+            matches: { type: integer }
+            pendingClaims: { type: integer }
+            returned: { type: integer }
+        recentItems:
+          type: array
+          items: { $ref: "#/components/schemas/Item" }
+        recentActivity:
+          type: array
+          items:
+            type: object
+            required: [id, title, description, timestamp, type]
+            properties:
+              id: { type: string }
+              title: { type: string }
+              description: { type: string }
+              timestamp: { type: string }
+              type: { type: string }
+    AdminMetrics:
+      type: object
+      required: [totals, categories, trend]
+      properties:
+        totals:
+          type: object
+          required: [lost, found, matches, pending, returned]
+          properties:
+            lost: { type: integer }
+            found: { type: integer }
+            matches: { type: integer }
+            pending: { type: integer }
+            returned: { type: integer }
+        categories:
+          type: array
+          items:
+            type: object
+            required: [category, count]
+            properties:
+              category: { type: string }
+              count: { type: integer }
+        trend:
+          type: array
+          items:
+            type: object
+            required: [label, lost, found]
+            properties:
+              label: { type: string }
+              lost: { type: integer }
+              found: { type: integer }
